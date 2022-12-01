@@ -1,3 +1,0 @@
-"D:\software\tools\Develop\CLion 2021.2.3\bin\cmake\win\bin\cmake.exe" -E rm -f CMakeFiles\Memory.dir/objects.a
-D:\software\tools\MGW\bin\ar.exe cr CMakeFiles\Memory.dir/objects.a @CMakeFiles\Memory.dir\objects1.rsp
-D:\software\tools\MGW\bin\g++.exe -g -Wl,--whole-archive CMakeFiles\Memory.dir/objects.a -Wl,--no-whole-archive -o Memory.exe -Wl,--out-implib,libMemory.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\Memory.dir\linklibs.rsp
