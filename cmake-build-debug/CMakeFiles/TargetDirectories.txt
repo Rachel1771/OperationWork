@@ -1,3 +1,4 @@
-D:/CLionProjects/OperationWork/cmake-build-debug/CMakeFiles/OperationWork.dir
-D:/CLionProjects/OperationWork/cmake-build-debug/CMakeFiles/edit_cache.dir
-D:/CLionProjects/OperationWork/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+D:/software/codes/Clion/OperationClass/OperationWork/cmake-build-debug/CMakeFiles/buddy.dir
+D:/software/codes/Clion/OperationClass/OperationWork/cmake-build-debug/CMakeFiles/OperationWork.dir
+D:/software/codes/Clion/OperationClass/OperationWork/cmake-build-debug/CMakeFiles/edit_cache.dir
+D:/software/codes/Clion/OperationClass/OperationWork/cmake-build-debug/CMakeFiles/rebuild_cache.dir

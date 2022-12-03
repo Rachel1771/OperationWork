@@ -1,4 +1,4 @@
-ToolSet: w64 9.0 (local)@D:\Program Files\JetBrains\CLion 2022.2.4\bin\mingw
+ToolSet: w64 7.0 (local)@D:\software\tools\MGW
 Options: 
 
 Options:

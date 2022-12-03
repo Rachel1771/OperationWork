@@ -17,12 +17,17 @@ struct Buddy
     int level;
     bool deleteThis;
 };
+
 //定义变量
 Buddy *root,*newnodeLeft,*newnodeRight;
 int memory,number,n;
 Buddy  * freelist[20],*allocateThisNode;
 Buddy * rootCopy;
-
+Buddy * temp = NULL;
+Buddy * used = NULL;
+Buddy * use = NULL;
+Buddy * unused = NULL;
+Buddy * unuse = NULL;
 
 
 int allocations=0,internalFragmentation;
@@ -46,9 +51,56 @@ void printTree(Buddy *n)
     level++;
     for (i = 0; i < level; i++)
         printf("\t");
+    if(n->left == NULL && n->right == NULL)
+    {
+        temp = new Buddy;
+        temp->size = n->size;
+        temp->address = n->address;
+        temp->allocated = n->allocated;
+        temp->freeSpace = n->freeSpace;
+        temp->level = n->level;
+        temp->deleteThis = n->deleteThis;
+        temp->parent = NULL;
+        temp->right = NULL;
+        temp->left = NULL;
+        temp->next = NULL;
+        temp->previous = NULL;
+        printf("!"); //标记
+        if(n->allocated == true)
+        {
+            printf("$"); //标记
+            if(use == NULL)
+            {
+                used = temp;
+                use = used;
+                temp = NULL;
+//			used = used->next;
+            }
+            else if(use!=NULL)
+            {
+                used->next = temp;
+                used = used->next;
+                temp = NULL;
+            }
+        }
+        else
+        {
+            if(unuse == NULL)
+            {
+                unused = temp;
+                unuse = unused;
+                temp = NULL;
+//			used = used->next;
+            }
+            else if(unuse!=NULL)
+            {
+                unused->next = temp;
+                unused = unused->next;
+                temp = NULL;
+            }
+        }
+    }
     printf("%2d", n->size);
-    if(n->allocated == true)
-        printf("$");
     printf("-----%2d",n->address);
     printf("\n");
     printTree(n->left);
@@ -60,106 +112,90 @@ Buddy * splitMemory(Buddy *tree)
     if(tree==NULL)
         return NULL;
 
-    if(tree->right==NULL && tree->left==NULL && tree->size > processValue && tree->allocated==false && nodeFound==false)
-    {
+    if(tree->right==NULL && tree->left==NULL && tree->size > processValue && tree->allocated==false && nodeFound==false) {
+
         newnodeRight = new Buddy;
         newnodeLeft = new Buddy;
 
-        newnodeRight->parent=tree;
-        newnodeLeft->parent=tree;
-        newnodeRight->size=tree->size/2;
-        newnodeLeft->size=tree->size/2;
-        newnodeRight->freeSpace=tree->size/2;
-        newnodeLeft->freeSpace=tree->size/2;
-        newnodeRight->allocated=false;
-        newnodeLeft->allocated=false;
-        newnodeRight->deleteThis=false;
-        newnodeLeft->deleteThis=false;
-        newnodeLeft->address=tree->address;
-        newnodeRight->address=(tree->address+tree->size/2);
-        newnodeRight->left=NULL;
-        newnodeRight->right=NULL;
-        newnodeLeft->left=NULL;
-        newnodeLeft->right=NULL;
+        newnodeRight->parent = tree;
+        newnodeLeft->parent = tree;
+        newnodeRight->size = tree->size / 2;
+        newnodeLeft->size = tree->size / 2;
+        newnodeRight->freeSpace = tree->size / 2;
+        newnodeLeft->freeSpace = tree->size / 2;
+        newnodeRight->allocated = false;
+        newnodeLeft->allocated = false;
+        newnodeRight->deleteThis = false;
+        newnodeLeft->deleteThis = false;
+        newnodeLeft->address = tree->address;
+        newnodeRight->address = (tree->address + tree->size / 2);
+        newnodeRight->left = NULL;
+        newnodeRight->right = NULL;
+        newnodeLeft->left = NULL;
+        newnodeLeft->right = NULL;
 
-        // link with the tree
-        tree->left=newnodeLeft;
-        tree->right=newnodeRight;
-        tree->deleteThis=true;
-        // delete the parent from the free list
-        value=1;
-        level=0;
-        while(value < tree->size)
-        {
+        //连接
+        tree->left = newnodeLeft;
+        tree->right = newnodeRight;
+        tree->deleteThis = true;
+
+        value = 1;
+        level = 0;
+        while (value < tree->size) {
             value = value * 2;
             level++;
         }
 
-        while(freelist[level]->deleteThis!=true)
-        {
-            freelist[level]=freelist[level]->next;
-        }// end of while
-
-        // set the delete bit to false again for future use
-        freelist[level]->deleteThis=false;
-        if(freelist[level]->previous!=NULL)
-        {
-            freelist[level]->previous->next=freelist[level]->next;
-            if(freelist[level]->next!=NULL)
-                freelist[level]->next->previous=freelist[level]->previous;
-        }// end of if
-        else
-        {
-            if(freelist[level]->next!=NULL)
-            {
-                freelist[level]=freelist[level]->next;
-                freelist[level]->previous=NULL;
-            }
-            else
-                freelist[level]=NULL;
+        while (freelist[level]->deleteThis != true) {
+            freelist[level] = freelist[level]->next;
         }
-        // end of delete the parent node
 
-        // insert the two nodes in the free list
-        value=1;
-        level=0;
-        while(value < newnodeLeft->size)
-        {
+        freelist[level]->deleteThis = false;
+        if (freelist[level]->previous != NULL) {
+            freelist[level]->previous->next = freelist[level]->next;
+            if (freelist[level]->next != NULL)
+                freelist[level]->next->previous = freelist[level]->previous;
+        } else {
+            if (freelist[level]->next != NULL) {
+                freelist[level] = freelist[level]->next;
+                freelist[level]->previous = NULL;
+            } else
+                freelist[level] = NULL;
+        }
+
+        // 插入节点
+        value = 1;
+        level = 0;
+        while (value < newnodeLeft->size) {
             value = value * 2;
             level++;
         }
 
-        if(freelist[level]!=NULL)
-        {
-            while(freelist[level]->next!=NULL)
-            {
-                freelist[level]=freelist[level]->next;
+        if (freelist[level] != NULL) {
+            while (freelist[level]->next != NULL) {
+                freelist[level] = freelist[level]->next;
             }
 
-            freelist[level]->next=newnodeLeft;
-            newnodeLeft->previous=freelist[level];
-            newnodeLeft->next=newnodeRight;
-            newnodeRight->previous=newnodeLeft;
-            newnodeRight->next=NULL;
-        }// end of if
-
-        else
-        {
-            freelist[level]=newnodeLeft;
-            freelist[level]->previous=NULL;
-            freelist[level]->next=newnodeRight;
-            newnodeRight->previous=newnodeLeft;
-            newnodeRight->next=NULL;
-        }// end of else
+            freelist[level]->next = newnodeLeft;
+            newnodeLeft->previous = freelist[level];
+            newnodeLeft->next = newnodeRight;
+            newnodeRight->previous = newnodeLeft;
+            newnodeRight->next = NULL;
+        } else {
+            freelist[level] = newnodeLeft;
+            freelist[level]->previous = NULL;
+            freelist[level]->next = newnodeRight;
+            newnodeRight->previous = newnodeLeft;
+            newnodeRight->next = NULL;
+        }
 
 
-        if(newnodeLeft->size==processValue)
-        {
-            nodeFound=true;
+        if (newnodeLeft->size == processValue) {
+            nodeFound = true;
             allocateThisNode = tree->left;
         }
 
-    }// end of if
+    }
 
     if(nodeFound==false)
     {
@@ -167,8 +203,7 @@ Buddy * splitMemory(Buddy *tree)
         splitMemory(tree->right);
     }
 
-}// end of function
-
+}
 
 //分配内存给进程
 void allocateMemoryToProcess(int processSize)
@@ -180,7 +215,7 @@ void allocateMemoryToProcess(int processSize)
     {
         processValue = processValue * 2;
         level++;
-    }// end of while
+    }
 
     allocateThisNode = NULL;
     // search free node in the list
@@ -236,19 +271,19 @@ void allocateMemoryToProcess(int processSize)
         {
             value = value * 2;
             level++;
-        }// end of while
+        }
 
         while(freelist[level]->deleteThis!=true)
         {
             freelist[level]=freelist[level]->next;
-        }// end of while
+        }
 
         if(freelist[level]->previous!=NULL)
         {
             freelist[level]->previous->next=freelist[level]->next;
             if(freelist[level]->next!=NULL)
                 freelist[level]->next->previous=freelist[level]->previous;
-        }// end of if
+        }
         else
         {
             if(freelist[level]->next!=NULL)
@@ -258,18 +293,18 @@ void allocateMemoryToProcess(int processSize)
             }
             else
                 freelist[level]=NULL;
-        }// end of else
+        }
 
-    }// end of if
+    }
 
     allocateThisNode->allocated=true;
     allocateThisNode->freeSpace=allocateThisNode->size - processSize;
     allocations++;
     printf("\n");
-    cout<<"\n Allocated Size= "<<allocateThisNode->size<<"--- Process Size = "<<processSize;
+    printf("分配成功，大小为：%d",allocateThisNode->size);
     printf("\n");
 
-}// end of process
+}
 
 
 void recursiveCheck(Buddy * root)
@@ -295,7 +330,7 @@ void recursiveCheck(Buddy * root)
                 while(freelist[level]->deleteThis!=true)
                 {
                     freelist[level]=freelist[level]->next;
-                }// end of while
+                }
 
                 // set the delete bit to false again for future use
                 freelist[level]->deleteThis=false;
@@ -334,7 +369,7 @@ void recursiveCheck(Buddy * root)
                 while(freelist[level]->deleteThis!=true)
                 {
                     freelist[level]=freelist[level]->next;
-                }// end of while
+                }
 
                 // set the delete bit to false again for future use
                 freelist[level]->deleteThis=false;
@@ -486,24 +521,23 @@ void randomSearchAndDelete(Buddy * root,int address)
 
     if(root->left==NULL && root->right==NULL)
     {
-//        srand(time(NULL));
-//        luck = rand()%10;
+
         if(root->address == address)
         {
             root->allocated=false;
             root->freeSpace=root->size;
             allocations--;
-            cout<<"\n Deallocated.";
+
+            printf("回收成功");
             deleteSuccess=true;
             if(root->parent!=NULL)
-            {
+            {   //合并回收
                 if(root->parent->left->allocated==false && root->parent->right->allocated==false && root->parent->right->right==NULL && root->parent->left->left==NULL)
-                { // merge the two nodes.
+                {
 
                     if(root->parent->left==root)
                     {
-                        // remove the right portion from the
-                        // free list
+                        //回收右边
                         root->parent->right->deleteThis=true;
                         value=1;
                         level=0;
@@ -516,9 +550,7 @@ void randomSearchAndDelete(Buddy * root,int address)
                         while(freelist[level]->deleteThis!=true)
                         {
                             freelist[level]=freelist[level]->next;
-                        }// end of while
-
-                        // set the delete bit to false again for future use
+                        }
                         freelist[level]->deleteThis=false;
 
                         if(freelist[level]->previous!=NULL)
@@ -526,7 +558,7 @@ void randomSearchAndDelete(Buddy * root,int address)
                             freelist[level]->previous->next=freelist[level]->next;
                             if(freelist[level]->next!=NULL)
                                 freelist[level]->next->previous=freelist[level]->previous;
-                        }// end of if
+                        }
                         else
                         {
                             if(freelist[level]->next!=NULL)
@@ -538,11 +570,11 @@ void randomSearchAndDelete(Buddy * root,int address)
                                 freelist[level]=NULL;
                         }
 
-                    }// end of if
+                    }
 
                     else
                     {
-                        // remove the left portion from the free list
+                        //回收左边
                         root->parent->left->deleteThis=true;
                         value=1;
                         level=0;
@@ -555,9 +587,7 @@ void randomSearchAndDelete(Buddy * root,int address)
                         while(freelist[level]->deleteThis!=true)
                         {
                             freelist[level]=freelist[level]->next;
-                        }// end of while
-
-                        // set the delete bit to false again for future use
+                        }
                         freelist[level]->deleteThis=false;
 
                         if(freelist[level]->previous!=NULL)
@@ -578,19 +608,19 @@ void randomSearchAndDelete(Buddy * root,int address)
                         }
 
 
-                    }// end of else
+                    }
 
                     root->parent->left=NULL;
                     root->parent->right=NULL;
 
-                    // recursively check till the root if merge is possible
-                    // of the all the budds or not
+
+                    //持续搜索到顶，来合并
                     if(root->parent!=NULL)
                         recursiveCheck(root->parent);
                 }
                 else
-                {	// compute the level so that the node can be inserted
-                    // into the free list
+                {
+                    // 插入到对应的链表层
                     value=1;
                     level=0;
                     while(value < root->size)
@@ -608,7 +638,7 @@ void randomSearchAndDelete(Buddy * root,int address)
                         freelist[level]->next=root;
                         root->previous=freelist[level];
 
-                    }// end if
+                    }
                     else
                     {
                         freelist[level]=root;
@@ -616,11 +646,11 @@ void randomSearchAndDelete(Buddy * root,int address)
                         freelist[level]->next=NULL;
                     }
 
-                }// end of else
+                }
 
             }
         }
-    }// end of if
+    }
     if(deleteSuccess==false)
     {
         randomSearchAndDelete(root->left,address);
@@ -628,7 +658,7 @@ void randomSearchAndDelete(Buddy * root,int address)
     }
 
 
-}// end of function
+}
 
 
 //删除内存块然后合并
@@ -639,12 +669,9 @@ void deallocateMemoryOfProcess(int address)
     if(root->left!=NULL && root->right!=NULL)
     {
         randomSearchAndDelete(root,address);
-    }// end of if
+    }
 
-    //if(deleteSuccess==false)
-    //	cout<<"\n Delete Failed.";
-
-}// end of function
+}
 
 
 
@@ -664,8 +691,7 @@ void computeInternalFragmentation(Buddy * root)
 
 void buddySystem()
 {
-    // to support multiple runs in one execution
-    // clear all pointers
+    //初始化
     root=NULL;
     rootCopy=NULL;
     newnodeLeft=NULL;
@@ -680,8 +706,7 @@ void buddySystem()
         freelist[clear]=NULL;
     }
 
-    // create the first node in the tree, i.e root with
-    // 64K memory which is all free at the moment
+    //初始化节点
     root = new Buddy;
     root->size=memory;
     root->address=0;
@@ -699,16 +724,41 @@ void buddySystem()
 
     int a,b;
     while(1){
+        printf("请选择：1.分配内存 2.回收内存\n");
         scanf("%d",&b);
         if(b == 1){
+            printf("输入你要分配的内存大小：");
             scanf("%d",&a);
             allocateMemoryToProcess(a);
             printTree(root);
+            printf("占用链表：");
+            while(use != NULL){
+                printf("%d-",use->address);
+                use = use->next;
+            }
+            printf("\n");
+            printf("空闲链表：");
+            while(unuse != NULL){
+                printf("%d-",unuse->address);
+                unuse = unuse->next;
+            }
+            printf("\n");
+            use = NULL;
+            used = NULL;
+            unuse = NULL;
+            unused = NULL;
         }
         if(b == 2){
+            printf("输入回收内存的地址：");
             scanf("%d",&a);
             deallocateMemoryOfProcess(a);
             printTree(root);
+        }
+        if(b == 3){
+            while(use !=NULL){
+                printf("%d-",use->address);
+                use = use->next;
+            }
         }
     }
 
@@ -719,10 +769,7 @@ int main()
 
     while (1)
     {
-        /* code */
-        printf("输入1进入伙伴算法，输入2退出\n");
-        printf("请选择你的输入：");
-        scanf("%d",&number);
+
         printf("\n输入初始化内存大小：");
         scanf("%d",&memory);
         int sum = 1;
@@ -733,26 +780,8 @@ int main()
                 break;
             }
         }
-        if(number==1)
-            buddySystem();
-        else
-            break;
+        buddySystem();
     }
-
-    // while(1)
-    // {
-    //     cout<<"\n Press 1 to Simulate Buddy System."
-    //         <<"\n Press 0 to Exit."
-    //         <<"\n\n Enter Your Choice = ";
-    //     cin>>number;
-
-    //     if(number==1)
-    //         buddySystem();
-    //     else
-    //         break;
-
-    // }
-
 
 
     return 0;

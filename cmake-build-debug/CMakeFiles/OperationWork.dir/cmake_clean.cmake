@@ -1,6 +1,5 @@
 file(REMOVE_RECURSE
   "CMakeFiles/OperationWork.dir/main.cpp.obj"
-  "CMakeFiles/OperationWork.dir/main.cpp.obj.d"
   "OperationWork.exe"
   "OperationWork.exe.manifest"
   "OperationWork.pdb"
