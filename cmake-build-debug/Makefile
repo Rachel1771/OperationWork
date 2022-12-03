@@ -116,17 +116,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named buddy
+# Target rules for targets named Buddy
 
 # Build rule for target.
-buddy: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 buddy
-.PHONY : buddy
+Buddy: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 Buddy
+.PHONY : Buddy
 
 # fast build rule for target.
-buddy/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\buddy.dir\build.make CMakeFiles/buddy.dir/build
-.PHONY : buddy/fast
+Buddy/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Buddy.dir\build.make CMakeFiles/Buddy.dir/build
+.PHONY : Buddy/fast
 
 #=============================================================================
 # Target rules for targets named OperationWork
@@ -146,7 +146,7 @@ buddy.obj: buddy.cpp.obj
 
 # target to build an object file
 buddy.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\buddy.dir\build.make CMakeFiles/buddy.dir/buddy.cpp.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Buddy.dir\build.make CMakeFiles/Buddy.dir/buddy.cpp.obj
 .PHONY : buddy.cpp.obj
 
 buddy.i: buddy.cpp.i
@@ -154,7 +154,7 @@ buddy.i: buddy.cpp.i
 
 # target to preprocess a source file
 buddy.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\buddy.dir\build.make CMakeFiles/buddy.dir/buddy.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Buddy.dir\build.make CMakeFiles/Buddy.dir/buddy.cpp.i
 .PHONY : buddy.cpp.i
 
 buddy.s: buddy.cpp.s
@@ -162,7 +162,7 @@ buddy.s: buddy.cpp.s
 
 # target to generate assembly for a file
 buddy.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\buddy.dir\build.make CMakeFiles/buddy.dir/buddy.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Buddy.dir\build.make CMakeFiles/Buddy.dir/buddy.cpp.s
 .PHONY : buddy.cpp.s
 
 main.obj: main.cpp.obj
@@ -197,8 +197,8 @@ help:
 	@echo ... depend
 	@echo ... edit_cache
 	@echo ... rebuild_cache
+	@echo ... Buddy
 	@echo ... OperationWork
-	@echo ... buddy
 	@echo ... buddy.obj
 	@echo ... buddy.i
 	@echo ... buddy.s

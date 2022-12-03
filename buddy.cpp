@@ -33,7 +33,7 @@ Buddy * unuse = NULL;
 int allocations=0,internalFragmentation;
 int processSize=0,level=0;
 int value=1,allocationDenied=0;
-int luck=0,processValue=0;
+int processValue=0;
 bool deleteSuccess=false,nodeFound=false;
 
 //Êä³ö¶þ²æÊ÷

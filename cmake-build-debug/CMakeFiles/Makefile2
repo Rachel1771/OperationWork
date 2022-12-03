@@ -62,7 +62,7 @@ CMAKE_BINARY_DIR = D:\software\codes\Clion\OperationClass\OperationWork\cmake-bu
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
-all: CMakeFiles/buddy.dir/all
+all: CMakeFiles/Buddy.dir/all
 all: CMakeFiles/OperationWork.dir/all
 .PHONY : all
 
@@ -71,35 +71,35 @@ preinstall:
 .PHONY : preinstall
 
 # The main recursive "clean" target.
-clean: CMakeFiles/buddy.dir/clean
+clean: CMakeFiles/Buddy.dir/clean
 clean: CMakeFiles/OperationWork.dir/clean
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/buddy.dir
+# Target rules for target CMakeFiles/Buddy.dir
 
 # All Build rule for target.
-CMakeFiles/buddy.dir/all:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\buddy.dir\build.make CMakeFiles/buddy.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\buddy.dir\build.make CMakeFiles/buddy.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=D:\software\codes\Clion\OperationClass\OperationWork\cmake-build-debug\CMakeFiles --progress-num=3,4 "Built target buddy"
-.PHONY : CMakeFiles/buddy.dir/all
+CMakeFiles/Buddy.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Buddy.dir\build.make CMakeFiles/Buddy.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Buddy.dir\build.make CMakeFiles/Buddy.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=D:\software\codes\Clion\OperationClass\OperationWork\cmake-build-debug\CMakeFiles --progress-num=1,2 "Built target Buddy"
+.PHONY : CMakeFiles/Buddy.dir/all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/buddy.dir/rule: cmake_check_build_system
+CMakeFiles/Buddy.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start D:\software\codes\Clion\OperationClass\OperationWork\cmake-build-debug\CMakeFiles 2
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/buddy.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/Buddy.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start D:\software\codes\Clion\OperationClass\OperationWork\cmake-build-debug\CMakeFiles 0
-.PHONY : CMakeFiles/buddy.dir/rule
+.PHONY : CMakeFiles/Buddy.dir/rule
 
 # Convenience name for target.
-buddy: CMakeFiles/buddy.dir/rule
-.PHONY : buddy
+Buddy: CMakeFiles/Buddy.dir/rule
+.PHONY : Buddy
 
 # clean rule for target.
-CMakeFiles/buddy.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\buddy.dir\build.make CMakeFiles/buddy.dir/clean
-.PHONY : CMakeFiles/buddy.dir/clean
+CMakeFiles/Buddy.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Buddy.dir\build.make CMakeFiles/Buddy.dir/clean
+.PHONY : CMakeFiles/Buddy.dir/clean
 
 #=============================================================================
 # Target rules for target CMakeFiles/OperationWork.dir
@@ -108,7 +108,7 @@ CMakeFiles/buddy.dir/clean:
 CMakeFiles/OperationWork.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\OperationWork.dir\build.make CMakeFiles/OperationWork.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\OperationWork.dir\build.make CMakeFiles/OperationWork.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=D:\software\codes\Clion\OperationClass\OperationWork\cmake-build-debug\CMakeFiles --progress-num=1,2 "Built target OperationWork"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=D:\software\codes\Clion\OperationClass\OperationWork\cmake-build-debug\CMakeFiles --progress-num=3,4 "Built target OperationWork"
 .PHONY : CMakeFiles/OperationWork.dir/all
 
 # Build rule for subdir invocation for target.
