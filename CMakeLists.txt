@@ -4,3 +4,5 @@ project(OperationWork)
 set(CMAKE_CXX_STANDARD 14)
 
 add_executable(OperationWork main.cpp struct.h)
+add_executable(buddy buddy.cpp)
+
