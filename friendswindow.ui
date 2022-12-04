@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>FriendsWindow</class>
+ <widget class="QMainWindow" name="FriendsWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -29,10 +29,10 @@
    <widget class="QWidget" name="verticalLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>80</y>
+      <x>160</x>
+      <y>70</y>
       <width>241</width>
-      <height>101</height>
+      <height>111</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -45,20 +45,13 @@
         <bool>false</bool>
        </property>
        <property name="placeholderText">
-        <string>请输入内存空间大小</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QTextEdit" name="RAMStartAddress">
-       <property name="placeholderText">
-        <string>请输入内存起始地址</string>
+        <string>请输入内存空间大小（2的倍数）</string>
        </property>
       </widget>
      </item>
     </layout>
    </widget>
-   <widget class="QPushButton" name="initButton">
+   <widget class="QPushButton" name="f_initButton">
     <property name="enabled">
      <bool>true</bool>
     </property>
@@ -74,59 +67,12 @@
      <string>提交</string>
     </property>
    </widget>
-   <widget class="QWidget" name="gridLayoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>270</x>
-      <y>80</y>
-      <width>281</width>
-      <height>101</height>
-     </rect>
-    </property>
-    <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
-      <widget class="QRadioButton" name="FF">
-       <property name="text">
-        <string>首次适应</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QRadioButton" name="BF">
-       <property name="text">
-        <string>最佳适应</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QRadioButton" name="NF">
-       <property name="text">
-        <string>循环首次适应</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QRadioButton" name="WF">
-       <property name="text">
-        <string>最坏适应</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QPushButton" name="pushButton">
-       <property name="text">
-        <string>伙伴算法</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>220</x>
+      <x>200</x>
       <y>0</y>
-      <width>121</width>
+      <width>161</width>
       <height>61</height>
      </rect>
     </property>
@@ -137,7 +83,7 @@
      </font>
     </property>
     <property name="text">
-     <string>初始化</string>
+     <string>伙伴算法</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
@@ -175,10 +121,10 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QPushButton" name="arrangeButton">
+   <widget class="QPushButton" name="f_arrangeButton">
     <property name="geometry">
      <rect>
-      <x>160</x>
+      <x>200</x>
       <y>470</y>
       <width>80</width>
       <height>31</height>
@@ -188,10 +134,10 @@
      <string>分配空间</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="recycleButton">
+   <widget class="QPushButton" name="f_recycleButton">
     <property name="geometry">
      <rect>
-      <x>240</x>
+      <x>280</x>
       <y>470</y>
       <width>80</width>
       <height>31</height>
@@ -201,23 +147,7 @@
      <string>回收空间</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="resetButton">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>320</x>
-      <y>470</y>
-      <width>80</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>清空占用</string>
-    </property>
-   </widget>
-   <widget class="QTableWidget" name="usedSpaceTable">
+   <widget class="QTableWidget" name="f_usedSpaceTable">
     <property name="geometry">
      <rect>
       <x>30</x>
@@ -227,7 +157,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QTableWidget" name="freeSpaceTable">
+   <widget class="QTableWidget" name="f_freeSpaceTable">
     <property name="geometry">
      <rect>
       <x>300</x>
@@ -235,6 +165,19 @@
       <width>231</width>
       <height>191</height>
      </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>91</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>返回</string>
     </property>
    </widget>
   </widget>

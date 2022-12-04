@@ -4,6 +4,7 @@
 #include "struct.h"
 #include "setspace.h"
 #include "removespace.h"
+#include "friendswindow.h"
 
 int ramSize;
 int ramStartAddress;
@@ -20,7 +21,6 @@ MainWindow::MainWindow(QWidget *parent) :
     btg->addButton(ui->NF,2);
     btg->addButton(ui->BF,3);
     btg->addButton(ui->WF,4);
-    btg->addButton(ui->radioButton_5,5);
     ui->FF->setChecked(1);
 
     ui->arrangeButton->setDisabled(1);
@@ -196,4 +196,11 @@ void MainWindow::printList(struct memLinkList *pmemlist)
     qDebug("used count:%d",used_count);
     if(used_count == 0)
         ui->usedSpaceTable->setRowCount(0);
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    FriendsWindow *fw = new FriendsWindow;
+    fw->show();
+    this->destroy();
 }

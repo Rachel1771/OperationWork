@@ -28,17 +28,21 @@ SOURCES += \
         mainwindow.cpp \
     initializezddialog.cpp \
     setspace.cpp \
-    removespace.cpp
+    removespace.cpp \
+    friendswindow.cpp
 
 HEADERS += \
         mainwindow.h \
     initializezddialog.h \
     setspace.h \
     removespace.h \
-    struct.h
+    struct.h \
+    friendswindow.h \
+    buddy.h
 
 FORMS += \
         mainwindow.ui \
     initializezddialog.ui \
     setspace.ui \
-    removespace.ui
+    removespace.ui \
+    friendswindow.ui

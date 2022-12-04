@@ -1,27 +1,17 @@
-#include <conio.h>
-#include "iostream"
-using namespace std;
-#include <stdlib.h>
-#include <stdio.h>
-struct Buddy
-{
-    int size;
-    int address;
-    Buddy *parent;
-    Buddy *right;
-    Buddy *left;
-    Buddy *next;
-    Buddy *previous;
-    bool allocated;
-    int freeSpace;
-    int level;
-    bool deleteThis;
-};
+#include "friendswindow.h"
+#include "ui_friendswindow.h"
+#include "mainwindow.h"
+#include "initializezddialog.h"
+#include "setspace.h"
+#include "removespace.h"
+#include "buddy.h"
 
-//¶¨Òå±äÁ¿
+int f_ramSize;
+
+//å®šä¹‰å˜é‡
+int number,n;
 Buddy *root,*newnodeLeft,*newnodeRight;
-int memory,number,n;
-Buddy  * freelist[20],*allocateThisNode;
+Buddy * freelist[20],*allocateThisNode;
 Buddy * rootCopy;
 Buddy * temp = NULL;
 Buddy * used = NULL;
@@ -29,17 +19,151 @@ Buddy * use = NULL;
 Buddy * unused = NULL;
 Buddy * unuse = NULL;
 
-
 int allocations=0,internalFragmentation;
 int processSize=0,level=0;
 int value=1,allocationDenied=0;
 int processValue=0;
 bool deleteSuccess=false,nodeFound=false;
 
-//Êä³ö¶ş²æÊ÷
-void printTree(Buddy *n)
+FriendsWindow::FriendsWindow(QWidget *parent) :
+    QMainWindow(parent),
+    ui(new Ui::FriendsWindow)
 {
-    static int level = -1; //¼ÇÂ¼ÊÇµÚ¼¸²ã´Î
+    ui->setupUi(this);
+    ui->f_arrangeButton->setDisabled(1);
+    ui->f_recycleButton->setDisabled(1);
+
+    QStringList header; //åŠ¨æ€æ·»åŠ è¡¨å¤´
+    header<<"èµ·å§‹åœ°å€"<<"æœ«å°¾åœ°å€"<<"å¤§å°";
+
+
+    ui->f_usedSpaceTable->setShowGrid(true);
+    ui->f_usedSpaceTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->f_usedSpaceTable->setColumnCount(3);
+    ui->f_usedSpaceTable->setRowCount(0);
+    ui->f_usedSpaceTable->setHorizontalHeaderLabels(header);
+    ui->f_usedSpaceTable->verticalHeader()->setVisible(false);
+    ui->f_usedSpaceTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->f_usedSpaceTable->horizontalHeader()->setFont(QFont("song", 8));       //è®¾ç½®å­—ä½“æ ¼å¼
+
+    ui->f_freeSpaceTable->setShowGrid(true);
+    ui->f_freeSpaceTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->f_freeSpaceTable->setColumnCount(3);
+    ui->f_freeSpaceTable->setRowCount(0);
+    ui->f_freeSpaceTable->setHorizontalHeaderLabels(header);
+    ui->f_freeSpaceTable->verticalHeader()->setVisible(false);
+    ui->f_freeSpaceTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->f_freeSpaceTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->f_freeSpaceTable->horizontalHeader()->setFont(QFont("song", 8));       //è®¾ç½®å­—ä½“æ ¼å¼
+
+}
+
+FriendsWindow::~FriendsWindow()
+{
+    delete ui;
+}
+
+void FriendsWindow::receiveNewSpaceSize(int spaceSize){
+    qDebug("æ”¶åˆ°f_spaceSize:%d",spaceSize);
+    allocateMemoryToProcess(spaceSize);
+    printTree(root);
+    f_printList();
+    freeList();
+}
+
+void FriendsWindow::receiveSpaceAddress(int spaceAddress){
+    qDebug("æ”¶åˆ°å¾…å›æ”¶f_spaceAddress:%d",spaceAddress);
+    deallocateMemoryOfProcess(spaceAddress);
+    printTree(root);
+    f_printList();
+    freeList();
+}
+
+void FriendsWindow::on_pushButton_clicked()//é”€æ¯è¯¥çª—å£å¹¶è¿”å›
+{
+    MainWindow *mw = new MainWindow;
+    mw->show();
+    this->destroy();
+}
+
+void FriendsWindow::on_f_initButton_clicked()
+{
+    f_ramSize = ui->RAMSize->toPlainText().toInt();
+    initMemory(f_ramSize);
+    qDebug("f_ramSize:%d",f_ramSize);
+//    memListInit(&memlist, ramStartAddress, ramSize);
+    InitializezdDialog * init_dialog = new InitializezdDialog();
+    ui->f_arrangeButton->setDisabled(0);
+    ui->f_recycleButton->setDisabled(0);
+
+    init_dialog->show();
+    printTree(root);
+    f_printList();
+    freeList();
+}
+
+
+void FriendsWindow::on_f_arrangeButton_clicked()
+{
+    setSpace *ss = new setSpace();
+    connect(ss,SIGNAL(sendSpaceSize(int)),this,SLOT(receiveNewSpaceSize(int)));
+    ss->show();
+}
+
+void FriendsWindow::on_f_recycleButton_clicked()
+{
+    removeSpace *rs = new removeSpace();
+    connect(rs,SIGNAL(sendRemoveSpaceAddress(int)),this,SLOT(receiveSpaceAddress(int)));
+    rs->show();
+}
+
+void FriendsWindow::f_printList(){
+    ui->f_freeSpaceTable->setRowCount(0);
+    ui->f_freeSpaceTable->setRowCount(0);
+
+    int free_count = 0 ,used_count = 0;
+    int i = 0, j = 0;
+
+    while(unuse != NULL){
+        free_count++;
+        qDebug("unuse:%d",unuse->address);
+        ui->f_freeSpaceTable->setRowCount(free_count);
+        ui->f_freeSpaceTable->setItem(i,0,new QTableWidgetItem(QString::number(unuse->address)));
+        ui->f_freeSpaceTable->setItem(i,1,new QTableWidgetItem(QString::number(unuse->address+unuse->size - 1)));
+        ui->f_freeSpaceTable->setItem(i,2,new QTableWidgetItem(QString::number(unuse->size)));
+        unuse = unuse->next;
+        i++;
+    }
+
+    while(use != NULL){
+        used_count++;
+        qDebug("use:%d",use->address);
+        ui->f_usedSpaceTable->setRowCount(used_count);
+        ui->f_usedSpaceTable->setItem(j,0,new QTableWidgetItem(QString::number(use->address)));
+        ui->f_usedSpaceTable->setItem(j,1,new QTableWidgetItem(QString::number(use->address+use->size - 1)));
+        ui->f_usedSpaceTable->setItem(j,2,new QTableWidgetItem(QString::number(use->size)));
+        use = use->next;
+        j++;
+    }
+
+    qDebug("è¾“å‡ºæˆåŠŸ");
+
+    if(free_count == 0)
+        ui->f_freeSpaceTable->setRowCount(0);
+    if(used_count == 0)
+        ui->f_usedSpaceTable->setRowCount(0);
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//æ•°æ®ç›¸å…³æ“ä½œ
+
+
+
+//è¾“å‡ºäºŒå‰æ ‘
+void FriendsWindow::printTree(Buddy *n)
+{
+    static int level = -1; //è®°å½•æ˜¯ç¬¬å‡ å±‚æ¬¡
     int i;
     if (NULL == n)
         return;
@@ -50,7 +174,7 @@ void printTree(Buddy *n)
 
     level++;
     for (i = 0; i < level; i++)
-        printf("\t");
+        qDebug("\t");
     if(n->left == NULL && n->right == NULL)
     {
         temp = new Buddy;
@@ -65,10 +189,10 @@ void printTree(Buddy *n)
         temp->left = NULL;
         temp->next = NULL;
         temp->previous = NULL;
-        printf("!"); //±ê¼Ç
+        qDebug("!"); //æ ‡è®°
         if(n->allocated == true)
         {
-            printf("$"); //±ê¼Ç
+            qDebug("$"); //æ ‡è®°
             if(use == NULL)
             {
                 used = temp;
@@ -100,14 +224,14 @@ void printTree(Buddy *n)
             }
         }
     }
-    printf("%2d", n->size);
-    printf("-----%2d",n->address);
-    printf("\n");
+    qDebug("%2d", n->size);
+    qDebug("-----%2d",n->address);
+    qDebug("\n");
     printTree(n->left);
     level--;
 }
 
-Buddy * splitMemory(Buddy *tree)
+Buddy * FriendsWindow::splitMemory(Buddy *tree)
 {
     if(tree==NULL)
         return NULL;
@@ -134,7 +258,7 @@ Buddy * splitMemory(Buddy *tree)
         newnodeLeft->left = NULL;
         newnodeLeft->right = NULL;
 
-        //Á¬½Ó
+        //è¿æ¥
         tree->left = newnodeLeft;
         tree->right = newnodeRight;
         tree->deleteThis = true;
@@ -163,7 +287,7 @@ Buddy * splitMemory(Buddy *tree)
                 freelist[level] = NULL;
         }
 
-        // ²åÈë½Úµã
+        // æ’å…¥èŠ‚ç‚¹
         value = 1;
         level = 0;
         while (value < newnodeLeft->size) {
@@ -205,8 +329,8 @@ Buddy * splitMemory(Buddy *tree)
 
 }
 
-//·ÖÅäÄÚ´æ¸ø½ø³Ì
-void allocateMemoryToProcess(int processSize)
+//åˆ†é…å†…å­˜ç»™è¿›ç¨‹
+void FriendsWindow::allocateMemoryToProcess(int processSize)
 {
 
     processValue=1;
@@ -248,16 +372,15 @@ void allocateMemoryToProcess(int processSize)
         else
         {
             allocationDenied++;
-            printf("1");
+            qDebug("1");
             return;
         }
     }
-
     // we have the node where we'll insert the process
     // but first remove it from the free list
-    if(allocateThisNode==NULL){  //´Ë´¦³öÏÖÎÊÌâ£¬´ı½â¾ö £¬ÎªÊ²Ã´Ö¸ÏòÁË¿Õ£¿
-        printf("2");
-        printf("%d",freelist[n-1]->freeSpace) ;
+    if(allocateThisNode==NULL){  //æ­¤å¤„å‡ºç°é—®é¢˜ï¼Œå¾…è§£å†³ ï¼Œä¸ºä»€ä¹ˆæŒ‡å‘äº†ç©ºï¼Ÿ
+        qDebug("2");
+        qDebug("%d",freelist[n-1]->freeSpace) ;
         printTree(root);
         return;
     }
@@ -296,18 +419,17 @@ void allocateMemoryToProcess(int processSize)
         }
 
     }
-
     allocateThisNode->allocated=true;
     allocateThisNode->freeSpace=allocateThisNode->size - processSize;
     allocations++;
-    printf("\n");
-    printf("·ÖÅä³É¹¦£¬´óĞ¡Îª£º%d",allocateThisNode->size);
-    printf("\n");
+    qDebug("\n");
+    qDebug("åˆ†é…æˆåŠŸï¼Œå¤§å°ä¸ºï¼š%d",allocateThisNode->size);
+    qDebug("\n");
 
 }
 
 
-void recursiveCheck(Buddy * root)
+void FriendsWindow::recursiveCheck(Buddy * root)
 {
     if( root->parent!=NULL && root->parent->left->left==NULL && root->parent->left->right==NULL && root->parent->right->left==NULL && root->parent->right->right==NULL)
     {
@@ -514,7 +636,7 @@ void recursiveCheck(Buddy * root)
 
 
 
-void randomSearchAndDelete(Buddy * root,int address)
+void FriendsWindow::randomSearchAndDelete(Buddy * root,int address)
 {
     if(root==NULL)
         return;
@@ -528,16 +650,16 @@ void randomSearchAndDelete(Buddy * root,int address)
             root->freeSpace=root->size;
             allocations--;
 
-            printf("»ØÊÕ³É¹¦");
+            qDebug("å›æ”¶æˆåŠŸ");
             deleteSuccess=true;
             if(root->parent!=NULL)
-            {   //ºÏ²¢»ØÊÕ
+            {   //åˆå¹¶å›æ”¶
                 if(root->parent->left->allocated==false && root->parent->right->allocated==false && root->parent->right->right==NULL && root->parent->left->left==NULL)
                 {
 
                     if(root->parent->left==root)
                     {
-                        //»ØÊÕÓÒ±ß
+                        //å›æ”¶å³è¾¹
                         root->parent->right->deleteThis=true;
                         value=1;
                         level=0;
@@ -574,7 +696,7 @@ void randomSearchAndDelete(Buddy * root,int address)
 
                     else
                     {
-                        //»ØÊÕ×ó±ß
+                        //å›æ”¶å·¦è¾¹
                         root->parent->left->deleteThis=true;
                         value=1;
                         level=0;
@@ -614,13 +736,13 @@ void randomSearchAndDelete(Buddy * root,int address)
                     root->parent->right=NULL;
 
 
-                    //³ÖĞøËÑË÷µ½¶¥£¬À´ºÏ²¢
+                    //æŒç»­æœç´¢åˆ°é¡¶ï¼Œæ¥åˆå¹¶
                     if(root->parent!=NULL)
                         recursiveCheck(root->parent);
                 }
                 else
                 {
-                    // ²åÈëµ½¶ÔÓ¦µÄÁ´±í²ã
+                    // æ’å…¥åˆ°å¯¹åº”çš„é“¾è¡¨å±‚
                     value=1;
                     level=0;
                     while(value < root->size)
@@ -661,8 +783,8 @@ void randomSearchAndDelete(Buddy * root,int address)
 }
 
 
-//É¾³ıÄÚ´æ¿éÈ»ºóºÏ²¢
-void deallocateMemoryOfProcess(int address)
+//åˆ é™¤å†…å­˜å—ç„¶ååˆå¹¶
+void FriendsWindow::deallocateMemoryOfProcess(int address)
 {
     root = rootCopy;
     deleteSuccess = false;
@@ -676,7 +798,7 @@ void deallocateMemoryOfProcess(int address)
 
 
 
-void computeInternalFragmentation(Buddy * root)
+void FriendsWindow::computeInternalFragmentation(Buddy * root)
 {
     if(root!=NULL && root->freeSpace < root->size)
         internalFragmentation += root->freeSpace;
@@ -689,9 +811,8 @@ void computeInternalFragmentation(Buddy * root)
 
 }
 
-void buddySystem()
-{
-    //³õÊ¼»¯
+void FriendsWindow::initMemory(int ramSize){
+    //åˆå§‹åŒ–
     root=NULL;
     rootCopy=NULL;
     newnodeLeft=NULL;
@@ -700,17 +821,25 @@ void buddySystem()
     allocationDenied=0;
     internalFragmentation=0;
 
+    int sum = 1;
+        for(int i = 1;i<20;i++){
+            sum = sum*2;
+            if(sum==ramSize){
+                n = i;
+                break;
+            }
+        }
 
     for(int clear=0;clear<n+1;clear++)
     {
         freelist[clear]=NULL;
     }
 
-    //³õÊ¼»¯½Úµã
+    //åˆå§‹åŒ–èŠ‚ç‚¹
     root = new Buddy;
-    root->size=memory;
+    root->size=ramSize;
     root->address=0;
-    root->freeSpace=memory;
+    root->freeSpace=ramSize;
     root->left=NULL;
     root->right=NULL;
     root->parent=NULL;
@@ -722,67 +851,12 @@ void buddySystem()
     rootCopy=root;
     freelist[n]=root;
 
-    int a,b;
-    while(1){
-        printf("ÇëÑ¡Ôñ£º1.·ÖÅäÄÚ´æ 2.»ØÊÕÄÚ´æ\n");
-        scanf("%d",&b);
-        if(b == 1){
-            printf("ÊäÈëÄãÒª·ÖÅäµÄÄÚ´æ´óĞ¡£º");
-            scanf("%d",&a);
-            allocateMemoryToProcess(a);
-            printTree(root);
-            printf("Õ¼ÓÃÁ´±í£º");
-            while(use != NULL){
-                printf("%d-",use->address);
-                use = use->next;
-            }
-            printf("\n");
-            printf("¿ÕÏĞÁ´±í£º");
-            while(unuse != NULL){
-                printf("%d-",unuse->address);
-                unuse = unuse->next;
-            }
-            printf("\n");
-            use = NULL;
-            used = NULL;
-            unuse = NULL;
-            unused = NULL;
-        }
-        if(b == 2){
-            printf("ÊäÈë»ØÊÕÄÚ´æµÄµØÖ·£º");
-            scanf("%d",&a);
-            deallocateMemoryOfProcess(a);
-            printTree(root);
-        }
-        if(b == 3){
-            while(use !=NULL){
-                printf("%d-",use->address);
-                use = use->next;
-            }
-        }
-    }
 
 }
 
-int main()
-{
-
-    while (1)
-    {
-
-        printf("\nÊäÈë³õÊ¼»¯ÄÚ´æ´óĞ¡£º");
-        scanf("%d",&memory);
-        int sum = 1;
-        for(int i = 1;i<20;i++){
-            sum = sum*2;
-            if(sum==memory){
-                n = i;
-                break;
-            }
-        }
-        buddySystem();
-    }
-
-
-    return 0;
+void FriendsWindow::freeList(){
+    used = NULL;
+    use = NULL;
+    unused = NULL;
+    unuse = NULL;
 }
