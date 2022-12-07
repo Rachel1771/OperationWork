@@ -228,7 +228,7 @@ void mergeMemery(struct memLinkList *pmemlist, struct Node *pnode)
         pnode->_data._end = pnode->_next->_data._end;
 
         pnode->_next->_next->_prev = pnode;
-        prevemptynode = pnode;
+        prevemptynode = pnode->_prev;
         if (pmemlist->_emptylist._tail == pnode->_next) {
             //如果pnode的下一个刚好是最后一个节点
             pmemlist->_emptylist._tail = pnode;
